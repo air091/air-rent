@@ -1,0 +1,17 @@
+{
+    "name": "acesp/air-rent",
+    "autoload": {
+        "psr-4": {
+            "Acesp\\AirRent\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ace",
+            "email": "acesparkle243@gmail.com"
+        }
+    ],
+    "require": {
+        "firebase/php-jwt": "^7.0"
+    }
+}
