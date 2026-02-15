@@ -1,8 +1,17 @@
 <?php
+require_once realpath(__DIR__ . "/../../vendor/autoload.php");
 require_once realpath(__DIR__ . "/../models/User.php");
+
+use Dotenv\Dotenv;
+use Firebase\JWT\JWT;
+
+$dotenv = Dotenv::createImmutable(__DIR__ . "/../../");
+$dotenv->load();
 
 class AuthController
 {
+
+
   public static function registerUser()
   {
     try {
@@ -139,7 +148,7 @@ class AuthController
       // check user
       $user = User::selectEmailForLogin($email);
       // compare password
-      if (!$user && !password_verify($password, $user["password"])) {
+      if (!$user || !password_verify($password, $user["password"])) {
         http_response_code(401);
         echo json_encode([
           "success" => false,
@@ -148,10 +157,20 @@ class AuthController
         exit();
       }
 
+      // generate token
+      $jwtSecret = $_ENV["JWT_SECRET"];
+      $payload = [
+        "iss" => $_ENV["JWT_ISSUER"],
+        "exp" => time() + (int)$_ENV["JWT_EXPIRES_AT"],
+        "sub" => $user["id"]
+      ];
+      $token = JWT::encode($payload, $jwtSecret, "HS256");
+
       echo json_encode([
         "success" => true,
         "message" => "Logged in successfully",
-        "userId" => $user["id"]
+        "userId" => $user["id"],
+        "token" => $token
       ]);
     } catch (PDOException $err) {
       http_response_code(500);
