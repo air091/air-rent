@@ -6,8 +6,31 @@ header("Content-Type: application/json");
 $URI = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $method = $_SERVER["REQUEST_METHOD"];
 
-if ($URI === "/auth/login" && $method === "POST") {
+
+// REGISTER AS USER
+if ($URI === "/api/auth/user/register" && $method === "POST") {
   http_response_code(201);
-  AuthController::register();
+  AuthController::registerUser();
+  exit();
+}
+
+// REGISTER AS HOST
+if ($URI === "/api/auth/host/register" && $method === "POST") {
+  http_response_code(201);
+  AuthController::registerHost();
+  exit();
+}
+
+// REGISTER AS ADMIN
+if ($URI === "/api/auth/admin/register" && $method === "POST") {
+  http_response_code(201);
+  AuthController::registerAdmin();
+  exit();
+}
+
+// LOGIN
+if ($URI === "/api/auth/login" && $method === "POST") {
+  http_response_code(200);
+  AuthController::login();
   exit();
 }
