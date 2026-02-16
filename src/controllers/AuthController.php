@@ -10,8 +10,6 @@ $dotenv->load();
 
 class AuthController
 {
-
-
   public static function registerUser()
   {
     try {
@@ -24,7 +22,7 @@ class AuthController
         http_response_code(400);
         echo json_encode([
           "success" => false,
-          "message" => "All fields are required"
+          "message" => "All fields are required",
         ]);
         exit();
       }
@@ -34,13 +32,13 @@ class AuthController
       echo json_encode([
         "success" => true,
         "message" => "User Registered Successfully",
-        "userId" => $user
+        "userId" => $user,
       ]);
     } catch (PDOException $err) {
       echo json_encode([
         "sccuess" => false,
         "message" => "Register User Failed",
-        "errorMessage" => $err->getMessage()
+        "errorMessage" => $err->getMessage(),
       ]);
       exit();
     }
@@ -59,7 +57,7 @@ class AuthController
         http_response_code(400);
         echo json_encode([
           "success" => false,
-          "message" => "All fields are required"
+          "message" => "All fields are required",
         ]);
         exit();
       }
@@ -74,13 +72,13 @@ class AuthController
       echo json_encode([
         "success" => true,
         "message" => "Host Registered Successfully",
-        "hostId" => $user
+        "hostId" => $user,
       ]);
     } catch (PDOException $err) {
       echo json_encode([
         "success" => false,
         "message" => "Register Host Failed",
-        "errorMessage" => $err->getMessage()
+        "errorMessage" => $err->getMessage(),
       ]);
       exit();
     }
@@ -99,7 +97,7 @@ class AuthController
         http_response_code(400);
         echo json_encode([
           "success" => false,
-          "message" => "All fields are required"
+          "message" => "All fields are required",
         ]);
         exit();
       }
@@ -114,13 +112,13 @@ class AuthController
       echo json_encode([
         "success" => true,
         "message" => "Admin Registered Successfully",
-        "hostId" => $user
+        "hostId" => $user,
       ]);
     } catch (PDOException $err) {
       echo json_encode([
         "success" => false,
         "message" => "Register Admin Failed",
-        "errorMessage" => $err->getMessage()
+        "errorMessage" => $err->getMessage(),
       ]);
       exit();
     }
@@ -140,7 +138,7 @@ class AuthController
         http_response_code(400);
         echo json_encode([
           "success" => false,
-          "message" => "All fields are required"
+          "message" => "All fields are required",
         ]);
         exit();
       }
@@ -152,7 +150,7 @@ class AuthController
         http_response_code(401);
         echo json_encode([
           "success" => false,
-          "message" => "Invalid email or password"
+          "message" => "Invalid email or password",
         ]);
         exit();
       }
@@ -161,25 +159,43 @@ class AuthController
       $jwtSecret = $_ENV["JWT_SECRET"];
       $payload = [
         "iss" => $_ENV["JWT_ISSUER"],
-        "exp" => time() + (int)$_ENV["JWT_EXPIRES_AT"],
-        "sub" => $user["id"]
+        "exp" => time() + (int) $_ENV["JWT_EXPIRES_AT"],
+        "sub" => $user["id"],
       ];
       $token = JWT::encode($payload, $jwtSecret, "HS256");
+
+      // set cookie
+      setCookie("token", $token, [
+        "expires" => time() + 60,
+        "path" => "/",
+        "secure" => false,
+        "httponly" => true,
+        "samesite" => "strict",
+      ]);
 
       echo json_encode([
         "success" => true,
         "message" => "Logged in successfully",
         "userId" => $user["id"],
-        "token" => $token
+        "token" => $token,
       ]);
     } catch (PDOException $err) {
       http_response_code(500);
       echo json_encode([
         "success" => false,
         "message" => "Login Failed",
-        "errorMessage" => $err->getMessage()
+        "errorMessage" => $err->getMessage(),
       ]);
       exit();
     }
+  }
+
+  public static function me()
+  {
+    echo json_encode([
+      "success" => true,
+      "user" => $_SERVER["user_auth"],
+    ]);
+    return;
   }
 }
