@@ -213,4 +213,30 @@ class AuthController
     ]);
     return;
   }
+
+  public static function logout()
+  {
+    try {
+      setCookie("token", "", [
+        "expires" => time() - 3600,
+        "path" => "/",
+        "secure" => false,
+        "httponly" => true,
+        "samesite" => "strict",
+      ]);
+      unset($_COOKIE["token"]);
+      echo json_encode([
+        "success" => true,
+        "message" => "User logged out successfully",
+      ]);
+    } catch (PDOException $err) {
+      http_response_code(500);
+      echo json_encode([
+        "success" => false,
+        "message" => "Logout Failed",
+        "errorMessage" => $err->getMessage(),
+      ]);
+      exit();
+    }
+  }
 }
