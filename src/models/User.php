@@ -3,30 +3,40 @@ require_once realpath(__DIR__ . "/../configs/AuthDatabase.php");
 
 class User
 {
+  private static function generateUUID(): string
+  {
+    $uuid = random_bytes(16);
+    $uuid[6] = chr((ord($uuid[6]) & 0x0f) | 0x40);
+    $uuid[8] = chr((ord($uuid[8]) & 0x3f) | 0x80);
+    return vsprintf("%s%s-%s-%s-%s-%s%s%s", str_split(bin2hex($uuid), 4));
+  }
+
   // insert user
   public static function insertUser(
     string $email,
     string $password,
-    int $roleUid,
-    int $statusUid,
+    string $roleUUID,
+    string $statusUUID,
   ) {
-    $query = "INSERT INTO account (email, password, role_uid, status_uid)
-              VALUES (:email, :password, :role_uid, :status_uid)";
+    $uuid = self::generateUUID();
+    $query = "INSERT INTO account (uuid, email, password, role_uuid, status_uuid)
+              VALUES (:uuid, :email, :password, :role_uuid, :status_uuid)";
     $pdo = AuthDatabase::connect();
     $statement = $pdo->prepare($query);
     $statement->execute([
+      "uuid" => $uuid,
       "email" => $email,
       "password" => $password,
-      "role_uid" => $roleId,
-      "status_uid" => $statusId,
+      "role_uuid" => $roleUUID,
+      "status_uuid" => $statusUUID,
     ]);
-    return (int) $pdo->lastInsertId();
+    return $uuid;
   }
 
   // find user by email
   public static function selectEmailForLogin(string $email)
   {
-    $query = "SELECT id, password FROM account WHERE email = :email";
+    $query = "SELECT uuid, password FROM account WHERE email = :email";
     $pdo = AuthDatabase::connect();
     $statement = $pdo->prepare($query);
     $statement->execute(["email" => $email]);

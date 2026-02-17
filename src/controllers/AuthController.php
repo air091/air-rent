@@ -27,7 +27,12 @@ class AuthController
         exit();
       }
       $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-      $user = User::insertUser($email, $passwordHash, 1, 1);
+      $user = User::insertUser(
+        $email,
+        $passwordHash,
+        "2b492ec3-0bb9-11f1-a1be-34298f7857e5",
+        "2b492ec3-0bb9-11f1-a1be-34298f7857e5",
+      );
 
       echo json_encode([
         "success" => true,
@@ -66,7 +71,12 @@ class AuthController
       $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
       // insert host
-      $user = User::insertUser($email, $passwordHash, 3, 1);
+      $user = User::insertUser(
+        $email,
+        $passwordHash,
+        "28519da5-0bb9-11f1-a1be-34298f7857e5",
+        "30a2d70b-0bb9-11f1-a1be-34298f7857e5",
+      );
 
       // return
       echo json_encode([
@@ -106,7 +116,12 @@ class AuthController
       $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
       // insert host
-      $user = User::insertUser($email, $passwordHash, 2, 1);
+      $user = User::insertUser(
+        $email,
+        $passwordHash,
+        "2263f1f8-0bb9-11f1-a1be-34298f7857e5",
+        "30a2d70b-0bb9-11f1-a1be-34298f7857e5",
+      );
 
       // return
       echo json_encode([
@@ -160,7 +175,7 @@ class AuthController
       $payload = [
         "iss" => $_ENV["JWT_ISSUER"],
         "exp" => time() + (int) $_ENV["JWT_EXPIRES_AT"],
-        "sub" => $user["id"],
+        "sub" => $user["uuid"],
       ];
       $token = JWT::encode($payload, $jwtSecret, "HS256");
 
@@ -176,7 +191,7 @@ class AuthController
       echo json_encode([
         "success" => true,
         "message" => "Logged in successfully",
-        "userId" => $user["id"],
+        "userId" => $user["uuid"],
         "token" => $token,
       ]);
     } catch (PDOException $err) {
