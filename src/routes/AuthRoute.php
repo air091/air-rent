@@ -10,7 +10,7 @@ $method = $_SERVER["REQUEST_METHOD"];
 // REGISTER AS USER
 if ($URI === "/api/auth/user/register" && $method === "POST") {
   http_response_code(201);
-  AuthController::registerUser();
+  AuthController::registerClient();
   exit();
 }
 

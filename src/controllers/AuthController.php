@@ -10,7 +10,7 @@ $dotenv->load();
 
 class AuthController
 {
-  public static function registerUser()
+  public static function registerClient()
   {
     try {
       $input = json_decode(file_get_contents("php://input"), true);
