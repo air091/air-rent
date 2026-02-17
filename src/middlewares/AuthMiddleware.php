@@ -10,7 +10,8 @@ $dotenv->load();
 
 class AuthMiddleware
 {
-  public static function verify() {
+  public static function verify()
+  {
     try {
       // get stored cookie
       $token = $_COOKIE["token"] ?? null;
@@ -20,7 +21,7 @@ class AuthMiddleware
         http_response_code(401);
         echo json_encode([
           "success" => false,
-          "message" => "No token"
+          "message" => "No token",
         ]);
         exit();
       }
@@ -33,7 +34,7 @@ class AuthMiddleware
       echo json_encode([
         "success" => false,
         "message" => "Token Verification Failed",
-        "errorMessage" => $err->getMessage();
+        "errorMessage" => $err->getMessage(),
       ]);
       exit();
     }

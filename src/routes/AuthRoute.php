@@ -1,5 +1,6 @@
 <?php
 require_once realpath(__DIR__ . "/../controllers/AuthController.php");
+require_once realpath(__DIR__ . "/../middlewares/AuthMiddleware.php");
 
 header("Content-Type: application/json");
 
@@ -36,6 +37,7 @@ if ($URI === "/api/auth/login" && $method === "POST") {
 
 if ($URI === "/api/auth/me" && $method === "GET") {
   http_response_code(200);
+  AuthMiddleware::verify();
   AuthController::me();
   exit();
 }
