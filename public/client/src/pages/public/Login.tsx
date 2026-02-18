@@ -45,7 +45,7 @@ export default function Login() {
               name="email"
               onChange={handleChange}
               value={user.email || ""}
-              placeholder="ex. johndoe@email.com"
+              placeholder="Ex. johndoe@email.com"
               className="block border rounded-sm py-1 px-2 w-full my-1"
             />
           </div>
