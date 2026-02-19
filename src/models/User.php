@@ -1,15 +1,9 @@
 <?php
 require_once realpath(__DIR__ . "/../configs/AuthDatabase.php");
+require_once realpath(__DIR__ . "/../utils/GenerateUUID.php");
 
 class User
 {
-  private static function generateUUID(): string
-  {
-    $uuid = random_bytes(16);
-    $uuid[6] = chr((ord($uuid[6]) & 0x0f) | 0x40);
-    $uuid[8] = chr((ord($uuid[8]) & 0x3f) | 0x80);
-    return vsprintf("%s%s-%s-%s-%s-%s%s%s", str_split(bin2hex($uuid), 4));
-  }
 
   // insert user
   public static function insertUser(
@@ -18,7 +12,7 @@ class User
     string $roleUUID,
     string $statusUUID,
   ) {
-    $uuid = self::generateUUID();
+    $uuid = GenerateUUID::generate();
     $query = "INSERT INTO account (uuid, email, password, role_uuid, status_uuid)
               VALUES (:uuid, :email, :password, :role_uuid, :status_uuid)";
     $pdo = AuthDatabase::connect();
@@ -33,7 +27,21 @@ class User
     return $uuid;
   }
 
-  // find user by email
+  // find account by uuid and host
+  public static function selectAccountByUuid(string $accountUUID)
+  {
+    $query = "SELECT account.uuid, account.email, role.name AS role, status.name AS status
+              FROM account
+              INNER JOIN role ON account.role_uuid = role.uuid
+              INNER JOIN status ON account.status_uuid = status.uuid
+              WHERE account.uuid = :account_uuid";
+    $pdo = AuthDatabase::connect();
+    $statement = $pdo->prepare($query);
+    $statement->execute(["account_uuid" => $accountUUID]);
+    return $statement->fetch(PDO::FETCH_ASSOC);
+  }
+
+  // find account by email for login
   public static function selectEmailForLogin(string $email)
   {
     $query = "SELECT uuid, password FROM account WHERE email = :email";

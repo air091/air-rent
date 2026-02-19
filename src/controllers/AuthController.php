@@ -31,7 +31,7 @@ class AuthController
         $email,
         $passwordHash,
         "2b492ec3-0bb9-11f1-a1be-34298f7857e5",
-        "2b492ec3-0bb9-11f1-a1be-34298f7857e5",
+        "30a2d70b-0bb9-11f1-a1be-34298f7857e5",
       );
 
       echo json_encode([
